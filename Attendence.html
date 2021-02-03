@@ -1,0 +1,235 @@
+<html>
+
+<head>
+
+	<script src="https://code.jquery.com/jquery-3.4.1.js"
+		integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.2.6/dist/web3.min.js"></script>
+	<script type="text/javascript">
+
+		var contract;
+		var address = "0x4e8f75a6f64107d9cf9b3e5d087fd3162e45700a";
+		var abi =[
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "adr",
+				"type": "address"
+			}
+		],
+		"name": "addAdmin",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "int256",
+				"name": "_rollno",
+				"type": "int256"
+			}
+		],
+		"name": "addAttendance",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "int256",
+				"name": "_rollno",
+				"type": "int256"
+			},
+			{
+				"internalType": "string",
+				"name": "_name",
+				"type": "string"
+			},
+			{
+				"internalType": "int256",
+				"name": "_attendance",
+				"type": "int256"
+			}
+		],
+		"name": "addStudent",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "int256",
+				"name": "_rollno",
+				"type": "int256"
+			}
+		],
+		"name": "viewAttendance",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "int256",
+						"name": "rollno",
+						"type": "int256"
+					},
+					{
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"internalType": "int256",
+						"name": "attendance",
+						"type": "int256"
+					}
+				],
+				"internalType": "struct Attendance.Student1",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+
+		web3 = new Web3(web3.currentProvider);
+		contract = new web3.eth.Contract(abi, address);
+
+		$(document).ready(function () {
+
+
+
+			$("#_addStudent").click(function () {
+
+				web3.eth.getAccounts().then(function (accounts) {
+
+					var acnt = accounts[0];
+					var sid = $("#_rollno").val();
+					var name = $("#_name").val();
+					var attendence = $("#_attendence").val();
+					return contract.methods.addStudent(sid, name, attendence).send({ from: acnt });
+				}).then(function (trx) {
+					console.log(trx);
+					alert("successfully added");
+				})
+			});
+
+			$("#_addAtt").click(function () {
+
+				web3.eth.getAccounts().then(function (accounts) {
+
+					var acnt = accounts[0];
+					var sid = $("#_rollnoA").val();
+					return contract.methods.addAttendance(sid).send({ from: acnt });
+				}).then(function (trx) {
+					console.log(trx);
+					alert("Attendance Updated");
+				})
+			});
+
+			$("#_addAdmin").click(function () {
+
+				web3.eth.getAccounts().then(function (accounts) {
+
+					var acnt = accounts[0];
+					var address = $("#_address").val() ;
+					return contract.methods.addAdmin(address).send({ from: acnt });
+				}).then(function (trx) {
+					console.log(trx);
+					alert("Admin added");
+				})
+			});
+
+
+
+
+
+			$("#_view").click(function () {
+
+				var rollno = parseInt($("#_rollnoV").val());
+				console.log(rollno);
+				contract.methods.viewAttendance(rollno).call(function (err, res) {
+					if (err) {
+						console.log();
+					}
+					$("#_nameV").val(res[1]);
+					$("#_attendenceV").val(res[2]);
+					console.log(res);
+				})
+
+			});
+
+
+
+			
+		});
+
+	</script>
+</head>
+
+<body style="background-image:url('a.jpg'); background-repeat: repeat-y;
+background-size: auto; background-size: 100% 100%; text-align :center;">
+	<!-- Add studens start -->
+	<h1> Blockchain Project Attendance management system</h1>
+	<div>
+		<label for="Roll">Student id</label>
+		<input type="text" id="_rollno"><br><br>
+
+	
+		<label for="name">Name</label>
+		<input type="text" id="_name"><br><br>
+	
+
+	
+		<label for="attendence">Attendence</label>
+		<input type="text" id="_attendence"><br><br>
+		<input type="submit" value="Add Student" id="_addStudent"><br><br><br>
+	</div>
+
+
+	<!-- Add students ends -->
+	<!-- Add attendence started -->
+	<div>
+		<label for="Roll">Student id</label>
+		<input type="text" id="_rollnoA"><br><br>
+		<input type="submit" value="Add Attendence" id="_addAtt"><br><br><br>
+	</div>
+	<!-- View attendance started -->
+
+
+	<div>
+		<label for="Roll">Student id</label>
+		<input type="text" id="_rollnoV"><br><br>
+
+		<label for="Name">Name</label>
+		<input type="text" id="_nameV"><br><br>
+
+		<label for="Roll">Attendence</label>
+		<input type="text" id="_attendenceV"><br><br>
+
+		<input type="submit" value="View Attendence" id="_view"><br><br><br>
+	</div>
+
+
+	<!-- View attendance ends -->
+	<!-- Add admin -->
+	<div>
+		<label for="address">Address</label>
+		<input type="text" id="_address"><br><br>
+		<input align="right" type="submit" value="Add Admin" id="_addAdmin"><br><br><br>
+	</div>
+	<!-- Admin ends -->
+
+</body>
+
+</html>
